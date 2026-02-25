@@ -73,6 +73,122 @@
             pointer-events: none;
             z-index: 0;
         }
+
+        /* 3D Tic Tac Toe Board */
+        .tictactoe-container {
+            perspective: 1500px;
+            perspective-origin: center center;
+        }
+
+        .tictactoe-3d {
+            transform: rotateX(15deg) rotateY(0deg);
+            transform-style: preserve-3d;
+            transition: transform 0.15s ease-out;
+        }
+
+        .tictactoe-square {
+            transform: translateZ(30px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow:
+                0 4px 6px rgba(0, 0, 0, 0.07),
+                0 8px 15px rgba(0, 0, 0, 0.1),
+                0 15px 30px rgba(0, 0, 0, 0.12),
+                0 25px 50px rgba(0, 0, 0, 0.08),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .tictactoe-square:hover {
+            transform: translateZ(50px);
+            box-shadow:
+                0 6px 10px rgba(0, 0, 0, 0.1),
+                0 12px 25px rgba(0, 0, 0, 0.15),
+                0 25px 50px rgba(0, 0, 0, 0.18),
+                0 40px 80px rgba(0, 0, 0, 0.12),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .dark .tictactoe-square {
+            box-shadow:
+                0 4px 6px rgba(0, 0, 0, 0.3),
+                0 8px 15px rgba(0, 0, 0, 0.25),
+                0 15px 30px rgba(0, 0, 0, 0.2),
+                0 25px 50px rgba(0, 0, 0, 0.15),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .dark .tictactoe-square:hover {
+            box-shadow:
+                0 6px 10px rgba(0, 0, 0, 0.35),
+                0 12px 25px rgba(0, 0, 0, 0.3),
+                0 25px 50px rgba(0, 0, 0, 0.25),
+                0 40px 80px rgba(0, 0, 0, 0.2),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        /* Swiss Re hovering animation with variable depth */
+        @keyframes hoverFloat {
+            0%, 100% {
+                transform: translateZ(30px) translateY(0px);
+                box-shadow:
+                    0 4px 6px rgba(0, 0, 0, 0.07),
+                    0 8px 15px rgba(0, 0, 0, 0.1),
+                    0 15px 30px rgba(0, 0, 0, 0.12),
+                    0 25px 50px rgba(0, 0, 0, 0.08),
+                    inset 0 -2px 0 rgba(0, 0, 0, 0.05);
+            }
+            25% {
+                transform: translateZ(70px) translateY(-10px);
+                box-shadow:
+                    0 10px 15px rgba(0, 0, 0, 0.12),
+                    0 20px 35px rgba(0, 0, 0, 0.15),
+                    0 35px 60px rgba(0, 0, 0, 0.18),
+                    0 50px 90px rgba(0, 0, 0, 0.12),
+                    inset 0 -2px 0 rgba(0, 0, 0, 0.05);
+            }
+            50% {
+                transform: translateZ(30px) translateY(-20px);
+                box-shadow:
+                    0 6px 10px rgba(0, 0, 0, 0.09),
+                    0 12px 25px rgba(0, 0, 0, 0.13),
+                    0 25px 45px rgba(0, 0, 0, 0.15),
+                    0 40px 70px rgba(0, 0, 0, 0.1),
+                    inset 0 -2px 0 rgba(0, 0, 0, 0.05);
+            }
+            75% {
+                transform: translateZ(70px) translateY(-10px);
+                box-shadow:
+                    0 10px 15px rgba(0, 0, 0, 0.12),
+                    0 20px 35px rgba(0, 0, 0, 0.15),
+                    0 35px 60px rgba(0, 0, 0, 0.18),
+                    0 50px 90px rgba(0, 0, 0, 0.12),
+                    inset 0 -2px 0 rgba(0, 0, 0, 0.05);
+            }
+        }
+
+        .swiss-re-hover {
+            animation: hoverFloat 3.5s ease-in-out infinite;
+        }
+
+        /* Draggable squares */
+        .tictactoe-square {
+            cursor: grab;
+            user-select: none;
+        }
+
+        .tictactoe-square:active {
+            cursor: grabbing;
+        }
+
+        .tictactoe-square.dragging {
+            opacity: 0.5;
+            transform: translateZ(80px) scale(1.05);
+        }
+
+        .tictactoe-square.drag-over {
+            border-color: #14b8a6 !important;
+            border-width: 3px;
+            background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(20, 184, 166, 0.05));
+        }
     </style>
 </head>
 <body class="bg-white text-gray-900 antialiased">
@@ -172,7 +288,7 @@
                 </div>
                 
                 <!-- Right Side - Tic Tac Toe Grid and Projects -->
-                <div class="md:col-span-8">
+                <div class="md:col-span-8" style="overflow: visible;">
                     
                     <!-- Tic Tac Toe Label -->
                     <div class="mb-6 text-center">
@@ -184,21 +300,22 @@
                     </div>
 
                     <!-- 3x3 Tic Tac Toe Grid -->
-                    <div class="grid grid-cols-3 gap-3 mb-10 max-w-lg mx-auto">
+                    <div class="mb-10 max-w-lg mx-auto tictactoe-container">
+                        <div class="grid grid-cols-3 gap-3 tictactoe-3d">
                         
                         <!-- Row 1: Top Row - Universities -->
-                        <div class="aspect-square bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-yellow-400 hover:shadow-xl transition-all duration-300 flex flex-col justify-center">
+                        <div class="tictactoe-square aspect-square bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-yellow-400 hover:shadow-xl transition-all duration-300 flex flex-col justify-center">
                             <img src="gatech.png" alt="GT" class="w-10 h-10 rounded-lg mb-2 mx-auto object-contain">
                             <h3 class="font-bold text-gray-900 text-xs text-center mb-1">Georgia Tech</h3>
                             <p class="text-[10px] text-gray-600 text-center">BS Industrial Eng</p>
                             <p class="text-[10px] text-gray-500 text-center">May 2025</p>
                         </div>
 
-                        <div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border-2 border-gray-200 flex items-center justify-center">
+                        <div class="tictactoe-square aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border-2 border-gray-200 flex items-center justify-center">
                             <span class="text-6xl text-gray-300 font-bold">×</span>
                         </div>
 
-                        <div class="aspect-square bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-red-900 hover:shadow-xl transition-all duration-300 flex flex-col justify-center">
+                        <div class="tictactoe-square aspect-square bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-red-900 hover:shadow-xl transition-all duration-300 flex flex-col justify-center">
                             <img src="uchicago.png" alt="UChicago" class="w-10 h-10 rounded-lg mb-2 mx-auto object-contain">
                             <h3 class="font-bold text-gray-900 text-xs text-center mb-1">UChicago</h3>
                             <p class="text-[10px] text-gray-600 text-center">MS Financial Math</p>
@@ -206,40 +323,45 @@
                         </div>
 
                         <!-- Row 2: Middle Row -->
-                        <div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border-2 border-gray-200 flex items-center justify-center">
+                        <div class="tictactoe-square aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border-2 border-gray-200 flex items-center justify-center">
                             <span class="text-6xl text-gray-300 font-light">○</span>
                         </div>
 
-                        <div class="aspect-square bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-red-400 hover:shadow-xl transition-all duration-300 flex flex-col justify-center ring-2 ring-indigo-100">
+                        <div class="tictactoe-square aspect-square bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-red-400 hover:shadow-xl transition-all duration-300 flex flex-col justify-center">
                             <img src="CIBC.png" alt="CIBC" class="w-10 h-10 rounded-lg mb-2 mx-auto object-contain">
                             <h3 class="font-bold text-gray-900 text-xs text-center mb-1">CIBC</h3>
                             <p class="text-[10px] text-gray-600 text-center">Quant Analyst</p>
                             <p class="text-[10px] text-gray-500 text-center">2025</p>
                         </div>
 
-                        <div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border-2 border-gray-200 flex items-center justify-center">
-                            <span class="text-6xl text-gray-300 font-bold">×</span>
+                        <!-- Swiss Re - Hovering to indicate not placed yet -->
+                        <div class="tictactoe-square aspect-square bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-teal-400 hover:shadow-xl transition-all duration-300 flex flex-col justify-center swiss-re-hover">
+                            <img src="SwissRe.png" alt="Swiss Re" class="w-10 h-10 rounded-lg mb-2 mx-auto object-contain">
+                            <h3 class="font-bold text-gray-900 text-xs text-center mb-1">Swiss Re</h3>
+                            <p class="text-[10px] text-gray-600 text-center">Portfolio Group</p>
+                            <p class="text-[10px] text-gray-500 text-center">2025</p>
                         </div>
 
                         <!-- Row 3: Bottom Row - Companies -->
-                        <div class="aspect-square bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-blue-400 hover:shadow-xl transition-all duration-300 flex flex-col justify-center">
+                        <div class="tictactoe-square aspect-square bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-blue-400 hover:shadow-xl transition-all duration-300 flex flex-col justify-center">
                             <img src="cencora.png" alt="CEN" class="w-10 h-10 rounded-lg mb-2 mx-auto object-contain">
                             <h3 class="font-bold text-gray-900 text-xs text-center mb-1">Cencora</h3>
                             <p class="text-[10px] text-gray-600 text-center">Data Engineering</p>
                             <p class="text-[10px] text-gray-500 text-center">2024 & 2025</p>
                         </div>
 
-                        <div class="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border-2 border-gray-200 flex items-center justify-center">
+                        <div class="tictactoe-square aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border-2 border-gray-200 flex items-center justify-center">
                             <span class="text-6xl text-gray-300 font-light">○</span>
                         </div>
 
-                        <div class="aspect-square bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-red-500 hover:shadow-xl transition-all duration-300 flex flex-col justify-center">
+                        <div class="tictactoe-square aspect-square bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-red-500 hover:shadow-xl transition-all duration-300 flex flex-col justify-center">
                             <img src="AA.png" alt="AA" class="w-10 h-10 rounded-lg mb-2 mx-auto object-contain">
                             <h3 class="font-bold text-gray-900 text-xs text-center mb-1">American</h3>
                             <p class="text-[10px] text-gray-600 text-center">Operations Research</p>
                             <p class="text-[10px] text-gray-500 text-center">2024 & 2025</p>
                         </div>
 
+                        </div>
                     </div>
 
                     <!-- Projects Section Below Grid -->
@@ -414,141 +536,186 @@
             updateCanvasColors();
         });
 
-        // Eigenvalue Animation Canvas
+        // Fourier Waves Animation Canvas
         const canvas = document.getElementById('eigenCanvas');
         const ctx = canvas.getContext('2d');
-        
-        let particles = [];
+
         let time = 0;
-        
+
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            initParticles();
         }
-        
-        class Particle {
-            constructor(x, y) {
-                this.baseX = x;
-                this.baseY = y;
-                this.x = x;
-                this.y = y;
-                this.phase = Math.random() * Math.PI * 2;
-                this.speed = 0.5 + Math.random() * 0.5;
-            }
-            
-            update(t) {
-                // Create transformation matrix based on eigenvalue properties
-                const angle = t * 0.0003 * this.speed;
-                
-                // Rotation matrix
-                const cos = Math.cos(angle + this.phase);
-                const sin = Math.sin(angle + this.phase);
-                
-                // Shearing parameters (simulating eigenvalue stretching)
-                const shearX = Math.sin(t * 0.0002 * this.speed) * 0.3;
-                const shearY = Math.cos(t * 0.0002 * this.speed) * 0.3;
-                
-                // Scaling (eigenvalue magnitude)
-                const scale = 1 + Math.sin(t * 0.0001 * this.speed + this.phase) * 0.2;
-                
-                // Apply transformations: rotation, shear, and scale
-                const relX = this.baseX - canvas.width / 2;
-                const relY = this.baseY - canvas.height / 2;
-                
-                // Combined transformation
-                this.x = canvas.width / 2 + (cos * relX - sin * relY + shearX * relY) * scale;
-                this.y = canvas.height / 2 + (sin * relX + cos * relY + shearY * relX) * scale;
-            }
-            
-            draw() {
-                const isDark = htmlElement.classList.contains('dark');
-                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, 3);
-                
-                if (isDark) {
-                    gradient.addColorStop(0, 'rgba(148, 163, 184, 0.4)');
-                    gradient.addColorStop(1, 'rgba(148, 163, 184, 0)');
-                } else {
-                    gradient.addColorStop(0, 'rgba(203, 213, 225, 0.5)');
-                    gradient.addColorStop(1, 'rgba(226, 232, 240, 0)');
-                }
-                
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-        
-        function initParticles() {
-            particles = [];
-            const spacing = 50;
-            const cols = Math.ceil(canvas.width / spacing);
-            const rows = Math.ceil(canvas.height / spacing);
-            
-            for (let i = 0; i < cols; i++) {
-                for (let j = 0; j < rows; j++) {
-                    const x = i * spacing + spacing / 2;
-                    const y = j * spacing + spacing / 2;
-                    particles.push(new Particle(x, y));
-                }
-            }
-        }
-        
-        function animate() {
+
+        function drawFourierWaves() {
             const isDark = htmlElement.classList.contains('dark');
-            
-            // Clear with fade effect
-            ctx.fillStyle = isDark ? 'rgba(15, 23, 42, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+
+            // Clear canvas
+            ctx.fillStyle = isDark ? 'rgba(15, 23, 42, 1)' : 'rgba(255, 255, 255, 1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            time++;
-            
-            // Update and draw particles
-            particles.forEach(particle => {
-                particle.update(time);
-                particle.draw();
-            });
-            
-            // Draw connections between nearby particles
-            const isDarkMode = htmlElement.classList.contains('dark');
-            const maxDist = 100;
-            
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    
-                    if (dist < maxDist) {
-                        const opacity = (1 - dist / maxDist) * 0.15;
-                        ctx.strokeStyle = isDarkMode 
-                            ? `rgba(148, 163, 184, ${opacity})`
-                            : `rgba(203, 213, 225, ${opacity})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
+
+            const centerY = canvas.height / 2;
+            const numWaves = 5;
+
+            // Draw multiple Fourier wave components
+            for (let wave = 0; wave < numWaves; wave++) {
+                ctx.beginPath();
+
+                const frequency = (wave + 1) * 0.5;
+                const amplitude = 50 / (wave + 1);
+                const phase = time * 0.02 * (wave + 1);
+                const verticalOffset = (wave - numWaves / 2) * 80;
+
+                // Color based on wave number and theme
+                const opacity = 0.15 - (wave * 0.02);
+                if (isDark) {
+                    ctx.strokeStyle = `rgba(148, 163, 184, ${opacity})`;
+                } else {
+                    ctx.strokeStyle = `rgba(100, 116, 139, ${opacity})`;
+                }
+
+                ctx.lineWidth = 2;
+
+                // Draw the wave using Fourier series (sine waves)
+                for (let x = 0; x < canvas.width; x++) {
+                    let y = centerY + verticalOffset;
+
+                    // Combine multiple harmonics for complex Fourier wave
+                    for (let harmonic = 1; harmonic <= 3; harmonic++) {
+                        y += amplitude * Math.sin(
+                            (x * frequency * harmonic * 0.01) +
+                            (phase / harmonic)
+                        ) / harmonic;
+                    }
+
+                    if (x === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
                     }
                 }
+
+                ctx.stroke();
             }
-            
-            requestAnimationFrame(animate);
+
+            time++;
+            requestAnimationFrame(drawFourierWaves);
         }
-        
+
         function updateCanvasColors() {
             // Force a redraw with new colors
             const isDark = htmlElement.classList.contains('dark');
             ctx.fillStyle = isDark ? 'rgba(15, 23, 42, 1)' : 'rgba(255, 255, 255, 1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-        
+
         // Initialize
         resizeCanvas();
-        animate();
-        
+        drawFourierWaves();
+
         window.addEventListener('resize', resizeCanvas);
+
+        // 3D Board Mouse Tracking
+        const tictactoeBoard = document.querySelector('.tictactoe-3d');
+        const tictactoeContainer = document.querySelector('.tictactoe-container');
+
+        if (tictactoeBoard && tictactoeContainer) {
+            tictactoeContainer.addEventListener('mousemove', (e) => {
+                const rect = tictactoeContainer.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                // Calculate mouse position relative to center (-1 to 1)
+                const mouseX = (e.clientX - centerX) / (rect.width / 2);
+                const mouseY = (e.clientY - centerY) / (rect.height / 2);
+
+                // Convert to rotation degrees (max ±15 degrees)
+                const rotateY = mouseX * 15;
+                const rotateX = -mouseY * 15 + 15; // Base 15deg + variation
+
+                tictactoeBoard.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            tictactoeContainer.addEventListener('mouseleave', () => {
+                // Return to default position
+                tictactoeBoard.style.transform = 'rotateX(15deg) rotateY(0deg)';
+            });
+        }
+
+        // Draggable Tic Tac Toe Squares
+        const squares = document.querySelectorAll('.tictactoe-square');
+        let draggedElement = null;
+
+        squares.forEach(square => {
+            square.setAttribute('draggable', 'true');
+
+            square.addEventListener('dragstart', (e) => {
+                draggedElement = square;
+                square.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            square.addEventListener('dragend', (e) => {
+                square.classList.remove('dragging');
+                draggedElement = null;
+            });
+
+            square.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                if (square !== draggedElement) {
+                    square.classList.add('drag-over');
+                }
+            });
+
+            square.addEventListener('dragleave', (e) => {
+                square.classList.remove('drag-over');
+            });
+
+            square.addEventListener('drop', (e) => {
+                e.preventDefault();
+                square.classList.remove('drag-over');
+
+                if (draggedElement && square !== draggedElement) {
+                    // Remove any drag state classes before swapping
+                    draggedElement.classList.remove('dragging', 'drag-over');
+                    square.classList.remove('dragging', 'drag-over');
+
+                    // Store current content
+                    const tempContent = square.innerHTML;
+
+                    // Get clean class lists (without drag states)
+                    const getCleanClasses = (element) => {
+                        return Array.from(element.classList).filter(
+                            cls => cls !== 'dragging' && cls !== 'drag-over'
+                        ).join(' ');
+                    };
+
+                    const tempClasses = getCleanClasses(square);
+                    const draggedClasses = getCleanClasses(draggedElement);
+
+                    // Swap innerHTML
+                    square.innerHTML = draggedElement.innerHTML;
+                    draggedElement.innerHTML = tempContent;
+
+                    // Swap classes
+                    square.className = draggedClasses;
+                    draggedElement.className = tempClasses;
+
+                    // Ensure both keep the base class
+                    if (!square.classList.contains('tictactoe-square')) {
+                        square.classList.add('tictactoe-square');
+                    }
+                    if (!draggedElement.classList.contains('tictactoe-square')) {
+                        draggedElement.classList.add('tictactoe-square');
+                    }
+
+                    // Make sure both are still draggable
+                    square.setAttribute('draggable', 'true');
+                    draggedElement.setAttribute('draggable', 'true');
+                }
+            });
+        });
     </script>
 </body>
 </html>
